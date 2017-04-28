@@ -59,6 +59,7 @@ public class Modelo {
         listaContactos.add(c);
         listaIdsBd.put(c.getID(), listaContactos.indexOf(c));
         cerrarDB();
+        //System.out.println("Contacto añadido " + c);
     }
 
     //Cargar contactos de BD en arraylist

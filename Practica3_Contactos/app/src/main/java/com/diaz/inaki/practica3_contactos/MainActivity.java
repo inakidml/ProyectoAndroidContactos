@@ -108,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
                 String bDay = conseguirCumple(id);
                 //conseguir el número Movil
                 String telefono = conseguirMovil(id);
-
-                if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
+                //System.out.println("id= " + id + " name= " + name + " column ndex has phone number =" +cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+                //if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
                     Contacto c = new Contacto();
                     c.setID(id);
                     c.setName(name);
@@ -118,6 +118,8 @@ public class MainActivity extends AppCompatActivity {
                     c.setPhotoURI(imageURI);
                     c.setFechaNacimiento(bDay);
                     c.setMensaje("Vacío");
+
+                    //System.out.println(c);
 
                     if (mod.getListaIdsBd().containsKey(c.getID())) {
                         Contacto cGuardado = mod.getListaContactos().get(mod.getListaIdsBd().get(c.getID()));
@@ -134,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                         mod.aniadirContactoDB(c);
                     }
                     //TODO comprobar que no se ha borrado algun contacto del teléfono, si es que sí, borrarlo
-                }
+                //}
             }
         }
         cur.close();//Cerramos el cursor
