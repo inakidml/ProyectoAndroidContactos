@@ -123,6 +123,11 @@ public class MainActivity extends AppCompatActivity {
                         Contacto cGuardado = mod.getListaContactos().get(mod.getListaIdsBd().get(c.getID()));
                         if (!cGuardado.equals(c)) {
                             //Si el contacto se ha modificado, lo cambiamos
+                            //mantenemos el mensaje y el tipo de notificación
+                            String mensaje = cGuardado.getMensaje();
+                            char aviso = cGuardado.getTipoNotif();
+                            c.setMensaje(mensaje);
+                            c.setTipoNotif(aviso);
                             mod.modificarContactoDB(c, cGuardado);
                         }
                     } else {
