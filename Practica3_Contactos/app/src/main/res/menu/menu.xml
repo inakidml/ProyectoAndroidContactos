@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:Contactos="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/MnuOpc1"
+        android:title="Configurar felicitaciones">
+    </item>
+</menu>
+
+    <!--
+    http://www.sgoliver.net/blog/menus-en-android-i-conceptos-basicos/
+    -->
