@@ -84,8 +84,10 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
         TextView fechaNacimiento = (TextView) findViewById(R.id.fechaNacimientoVerContacto);
         mensaje = (EditText) findViewById(R.id.mensajeVerContacto);
 
+        if(c.getPhotoURI()!=null){
+            photo.setImageURI(Uri.parse(c.getPhotoURI()));
+        }
 
-        photo.setImageURI(Uri.parse(c.getPhotoURI()));
         nombre.setText(c.getName());
         telefono.setText(c.getTelefono());
         fechaNacimiento.setText(c.getFechaNacimiento());

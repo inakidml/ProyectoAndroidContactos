@@ -45,7 +45,9 @@ public class CustomListAdapter extends ArrayAdapter<Contacto> {
             textViewAviso.setText("Aviso: Solo notificación");
         }
         textViewNumero.setText(listaContactos.get(posicion).getFechaNacimiento() + "  t: " + listaContactos.get(posicion).getTelefono());
-        imageViewPhoto.setImageURI(Uri.parse(listaContactos.get(posicion).getPhotoURI()));
+        if (listaContactos.get(posicion).getPhotoURI()!=null){
+            imageViewPhoto.setImageURI(Uri.parse(listaContactos.get(posicion).getPhotoURI()));
+        }
 
         return rowView;
     }

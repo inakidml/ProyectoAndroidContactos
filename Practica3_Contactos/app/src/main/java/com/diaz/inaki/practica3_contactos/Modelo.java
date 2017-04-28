@@ -127,7 +127,6 @@ public class Modelo {
 
     //Getters y Setters
 
-
     public List<Contacto> getListaContactos() {
         return listaContactos;
     }
