@@ -39,12 +39,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Context context = this;
         mod = new Modelo(this);
-        Alarma.mod = mod;
-        System.out.println("onCreate main");
         //mod.OJOborrarDB();
+        Alarma.mod = mod;
+        //System.out.println("onCreate main");
         setAlarma(horaAlarma, minutoAlarma);
         rellenarListaContactosDesdeTel();
-
 
     }
 
@@ -190,15 +189,29 @@ public class MainActivity extends AppCompatActivity {
             String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
             int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
             switch (type) {
-                case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
-                    //de momento no lo usamos
-                    break;
                 case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
                     telefono = number;
-                    break;
+                    //si no hay movil probamos con los demas
+                     break;
+
+                case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+                    if(telefono=="vacío"){
+                        telefono=number;
+                    }
+
+                    //break;
+
                 case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
-                    //de momento no lo usamos
+                    if(telefono=="vacío"){
+                        telefono=number;
+                    }
+                    //break;
+                case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER:
+                    if(telefono=="vacío"){
+                        telefono=number;
+                    }
                     break;
+
             }
         }
         phones.close();

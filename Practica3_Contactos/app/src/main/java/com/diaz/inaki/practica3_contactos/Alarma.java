@@ -1,11 +1,17 @@
 package com.diaz.inaki.practica3_contactos;
 
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by inaki on 22/4/17.
@@ -14,8 +20,10 @@ import java.util.Calendar;
 public class Alarma extends BroadcastReceiver {
     public static Modelo mod;
 
+    Context context;
     @Override
     public void onReceive(Context context, Intent intent) {
+        this.context = context;
         System.out.println("Alarma disparada!!!");
         CharSequence text = "Alarma disparada!!!!";
         int duration = Toast.LENGTH_SHORT;
@@ -34,8 +42,7 @@ public class Alarma extends BroadcastReceiver {
         }
 
         Boolean notificacionNecesaria = false;
-        String textoNotificacion = "Hoy es el cumpleaños de: \n";
-
+        List<String> listaNombres = new ArrayList<>();
         for (Contacto c : mod.getListaContactos()
                 ) {
             if (c.getFechaNacimiento() != "") {
@@ -46,10 +53,8 @@ public class Alarma extends BroadcastReceiver {
                     if (hoy.equals(cumple)) {
                         notificacionNecesaria = true;
                         //TODO notificación y sms
-                        System.out.println("Hoy es el cumple de: ");
-                        System.out.println(c);
-                        textoNotificacion += c.getName() + "\n";
-                        if (c.getTipoNotif()=='y'){
+                        listaNombres.add(c.getName());
+                        if (c.getTipoNotif() == 'y') {
                             enviarSMS(c);
                         }
                     }
@@ -57,12 +62,20 @@ public class Alarma extends BroadcastReceiver {
 
             }
         }
-        if (notificacionNecesaria){
-            notificación(textoNotificacion);
+        if (notificacionNecesaria) {
+            notificación(listaNombres);
         }
 
     }
-    private void enviarSMS(Contacto c){}
-    private void notificación(String nota){}
+
+    private void enviarSMS(Contacto c) {
+    }
+
+    private void notificación(List<String> nombres) {
+       Notificacion notificacion= new Notificacion(context, nombres);
+
+
+
+    }
 }
 
