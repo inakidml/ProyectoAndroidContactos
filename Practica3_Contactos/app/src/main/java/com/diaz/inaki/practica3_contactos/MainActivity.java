@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         mod = new Modelo(this);
         //mod.OJOborrarDB();
         Alarma.mod = mod;
-        //System.out.println("onCreate main");
         setAlarma(horaAlarma, minutoAlarma);
         rellenarListaContactosDesdeTel();
 

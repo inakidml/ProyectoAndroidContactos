@@ -58,8 +58,7 @@ public class Notificacion {
         PendingIntent resultadoPendingIntent = pila.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         constructorNotif.setContentIntent(resultadoPendingIntent);
 
-/*        *//* PASO 3. Crear y enviar *//*
-        */
+
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         // Título del expanded layout

@@ -29,11 +29,9 @@ public class Modelo {
         listaIdsBd = new HashMap<>();
         crearTabla();
         cargarBD();
-        //listarDB();
-
+        listarDB();
 
     }
-
 
     private void abrirDB() {
         db = c.openOrCreateDatabase("MisCumples", Context.MODE_PRIVATE, null);
