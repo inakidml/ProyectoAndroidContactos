@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">Practica3_Contactos</string>
+    <string name="notysms">Aviso: Notificación y SMS</string>
+    <string name="not">Aviso: Solo notificación</string>
+    <string name="noRegistros">No hay registros en BD</string>
+    <string name="noBoton">No se reconoce botón</string>
+    <string name="vacio">vacío</string>
+    <string name="alarma">Alarma disparada!!!!</string>
+    <string name="smsok">SMS enviado.</string>
+    <string name="smsnotok">SMS no enviado, por favor, inténtalo otra vez.</string>
+    <string name="tituloCumple">Cumpleaños</string>
+    <string name="saludoCumple">Hoy es el cumpleaños de: </string>
+    <string name="selectorHora">Seleccionar hora notificación</string>
+    <string name="botonDetalles">...</string>
+    <string name="fecha_de_nacimiento">Fecha de nacimiento:</string>
+    <string name="foto_del_contacto">Foto del Contacto</string>
+    <string name="botonGuardar">Guardar</string>
+    <string name="mensaje">Mensaje:</string>
+    <string name="nombre">Nombre:</string>
+    <string name="telefono">Teléfono:</string>
+    <string name="textview">TextView</string>
+    <string name="enviar_sms">¿Enviar SMS?</string>
+
 </resources>

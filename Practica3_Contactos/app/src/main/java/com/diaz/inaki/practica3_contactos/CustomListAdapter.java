@@ -40,9 +40,9 @@ public class CustomListAdapter extends ArrayAdapter<Contacto> {
 
         textViewNombre.setText(listaContactos.get(posicion).getName());
         if (listaContactos.get(posicion).getTipoNotif() == 'y') {
-            textViewAviso.setText("Aviso: Notificación y SMS");
+            textViewAviso.setText(R.string.notysms);
         } else {
-            textViewAviso.setText("Aviso: Solo notificación");
+            textViewAviso.setText(R.string.not);
         }
         textViewNumero.setText(listaContactos.get(posicion).getFechaNacimiento() + "  t: " + listaContactos.get(posicion).getTelefono());
         if (listaContactos.get(posicion).getPhotoURI()!=null){

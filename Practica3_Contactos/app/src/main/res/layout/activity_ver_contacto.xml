@@ -16,7 +16,7 @@
         android:layout_height="80dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:contentDescription="Foto del Contacto"
+        android:contentDescription="@string/foto_del_contacto"
         android:padding="5dp" />
 
     <TextView
@@ -25,44 +25,46 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Nombre:"
+        android:text="@string/nombre"
         android:textSize="12sp"
         android:layout_alignBaseline="@+id/textoNombreVerContacto"
         android:layout_alignBottom="@+id/textoNombreVerContacto"
-        android:layout_toEndOf="@+id/photoVerContacto" />
+        android:layout_toEndOf="@+id/photoVerContacto"
+        tools:ignore="TextViewEdits" />
 
     <TextView
         android:id="@+id/textoNombreVerContacto"
         android:layout_width="120dp"
         android:layout_height="40dp"
-        android:text="TextView"
-        tools:textSize="22sp"
+        android:text="@string/textview"
+        android:textSize="18sp"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/TextView" />
+        android:layout_toEndOf="@+id/TextView"
+        android:layout_above="@+id/checkBoxVerContacto" />
 
     <Button
         android:id="@+id/botonDetalles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="..."
+        android:text="@string/botonDetalles"
         android:layout_alignTop="@+id/textoNombreVerContacto"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        tools:ignore="RelativeOverlap" />
 
     <CheckBox
         android:id="@+id/checkBoxVerContacto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="¿Enviar SMS?"
-        android:layout_below="@+id/textoNombreVerContacto"
-        android:layout_alignStart="@+id/fechaNacimientoVerContacto" />
+        android:text="@string/enviar_sms"
+        android:layout_above="@+id/textoTelefonoVerContacto"
+        android:layout_toEndOf="@+id/photoVerContacto" />
 
     <TextView
         android:id="@+id/TextView2"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Teléfono:"
+        android:text="@string/telefono"
         android:textSize="12sp"
         android:layout_alignBaseline="@+id/textoTelefonoVerContacto"
         android:layout_alignBottom="@+id/textoTelefonoVerContacto"
@@ -70,13 +72,13 @@
 
     <TextView
         android:id="@+id/textoTelefonoVerContacto"
-        android:layout_width="120dp"
+        android:layout_width="200dp"
         android:layout_height="40dp"
-        android:text="TextView"
-        android:textSize="18sp"
         android:layout_below="@+id/photoVerContacto"
+        android:layout_marginTop="16dp"
         android:layout_toEndOf="@+id/TextView2"
-        android:layout_marginTop="16dp" />
+        android:text="@string/textview"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/TextView3"
@@ -85,15 +87,14 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/textoTelefonoVerContacto"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Fecha de nacimiento:"
+        android:text="@string/fecha_de_nacimiento"
         android:textSize="12sp" />
 
     <TextView
         android:id="@+id/fechaNacimientoVerContacto"
         android:layout_width="180dp"
         android:layout_height="40dp"
-        android:text="TextView"
+        android:text="@string/textview"
         android:textSize="18sp"
         android:layout_alignBaseline="@+id/TextView3"
         android:layout_alignBottom="@+id/TextView3"
@@ -105,8 +106,7 @@
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Mensaje:"
+        android:text="@string/mensaje"
         android:textSize="12sp"
         android:layout_below="@+id/fechaNacimientoVerContacto"
         android:layout_alignParentStart="true" />
@@ -118,8 +118,10 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/fechaNacimientoVerContacto"
         android:layout_marginTop="25dp"
+        android:inputType="textMultiLine"
         android:lines="4"
-        android:maxLines="4" />
+        android:maxLines="4"
+        tools:ignore="LabelFor" />
 
     <Button
         android:id="@+id/botonGuardar"
@@ -128,5 +130,5 @@
         android:layout_below="@+id/mensajeVerContacto"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:text="Guardar" />
+        android:text="@string/botonGuardar" />
 </RelativeLayout>

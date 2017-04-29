@@ -70,7 +70,7 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
                 startActivityForResult(intent, CONTACT_REQUEST);
                 break;
             default:
-                System.out.println("No se reconoce botón");
+                System.out.println(R.string.noBoton);
         }
 
     }
@@ -172,7 +172,7 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
         ContentResolver cr = getContentResolver();
         Cursor phones = cr.query(uriPhones, null, wherePhones, null, null);
 
-        String telefono = "vacío"; // variable temporal para el numero
+        String telefono = getString(R.string.vacio); // variable temporal para el numero
 
         while (phones.moveToNext()) {
             String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
@@ -223,7 +223,7 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
         //¿Cual es la columna de la fecha?
         int bDayColumn = birthCursor.getColumnIndex(ContactsContract.CommonDataKinds.Event.START_DATE);
 
-        String bDay = "vacío";
+        String bDay = getString(R.string.vacio);
         while (birthCursor.moveToNext()) {
             //conseguimos la fecha
             bDay = birthCursor.getString(bDayColumn);

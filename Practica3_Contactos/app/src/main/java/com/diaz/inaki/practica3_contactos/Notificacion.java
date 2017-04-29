@@ -35,15 +35,14 @@ public class Notificacion {
 
     public void enviarNotificacion(List<String> nombres) {
 
-        String mensaje = "Hoy es el cumpleaños de: ";
-
+        String mensaje = context.getString(R.string.saludoCumple);
 
         int notifId = 1; //Identificador de la notificación, para futuras modificaciones.
 
           /* PASO 1: Crear la notificación con sus propiedades */
         NotificationCompat.Builder constructorNotif = new NotificationCompat.Builder(context);
         constructorNotif.setSmallIcon(R.drawable.ic_stat_name);
-        constructorNotif.setContentTitle("Cumpleaños");
+        constructorNotif.setContentTitle(context.getString(R.string.tituloCumple));
         constructorNotif.setContentText(mensaje);
 
          /* PASO 2: Creamos un intent para abrir la actividad cuando se pulse la notificación*/
@@ -62,7 +61,7 @@ public class Notificacion {
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         // Título del expanded layout
-        inboxStyle.setBigContentTitle("Hoy es el cumpleaños de:");
+        inboxStyle.setBigContentTitle(mensaje);
         String[] arrayNombres = new String[nombres.size()];
 
         for (String nombre : nombres) {

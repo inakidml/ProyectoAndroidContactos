@@ -25,8 +25,8 @@ public class Alarma extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
-        System.out.println("Alarma disparada!!!");
-        CharSequence text = "Alarma disparada!!!!";
+        System.out.println(R.string.alarma);
+        CharSequence text = context.getString(R.string.alarma);
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
@@ -71,9 +71,9 @@ public class Alarma extends BroadcastReceiver {
         try {
             SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(c.getTelefono(), null, c.getMensaje(), null, null);
-            Toast.makeText(context, "SMS enviado.",Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.smsok,Toast.LENGTH_LONG).show();
         } catch (Exception e) {
-                    Toast.makeText(context, "SMS no enviado, por favor, inténtalo otra vez.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.smsnotok, Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }

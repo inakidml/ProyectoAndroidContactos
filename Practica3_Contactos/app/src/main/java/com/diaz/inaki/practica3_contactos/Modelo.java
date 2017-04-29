@@ -3,13 +3,13 @@ package com.diaz.inaki.practica3_contactos;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.PorterDuff;
-import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
 
 
 /**
@@ -65,7 +65,7 @@ public class Modelo {
         abrirDB();
         Cursor c = db.rawQuery("SELECT * FROM misCumples", null);
         if (c.getCount() == 0)
-            System.out.println("No hay registros en BD");
+            System.out.println(R.string.noRegistros);
         else {
             listaIdsBd.clear(); //borramos
             while (c.moveToNext()) {
@@ -87,12 +87,29 @@ public class Modelo {
         }
         cerrarDB();
     }
+    //Ordenar arrays alfabeticamente para que salgan ordenados en el listview
+    public void ordenarArrays() {
+
+        Collections.sort(listaContactos, new Comparator<Contacto>() {
+            @Override
+            public int compare(Contacto o1, Contacto o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        listaIdsBd.clear(); //borramos
+        for (int i = 0; i < listaContactos.size(); i++) {
+            Contacto c = listaContactos.get(i);
+            getListaIdsBd().put(c.getID(), i);//lo añadimos al map para saber si esta
+        }
+
+
+    }
 
     public void listarDB() {
         abrirDB();
         Cursor c = db.rawQuery("SELECT * FROM misCumples", null);
         if (c.getCount() == 0)
-            System.out.println("No hay registros en BD");
+            System.out.println(R.string.noRegistros);
         else {
             while (c.moveToNext()) {
                 System.out.println(c.getString(0) + "-" + c.getString(1) + "-" + c.getString(2) + "-" + c.getString(3) + "-" + c.getString(4) + "-" + c.getString(5) + "-" + c.getString(6));

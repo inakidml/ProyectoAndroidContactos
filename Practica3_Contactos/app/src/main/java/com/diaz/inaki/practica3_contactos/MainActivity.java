@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 }, hour, minute, true);
-                mTimePicker.setTitle("Seleccionar hora notificación");
+                mTimePicker.setTitle(R.string.selectorHora);
                 mTimePicker.show();
                 return true;
             default:
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     c.setTelefono(telefono);
                     c.setPhotoURI(imageURI);
                     c.setFechaNacimiento(bDay);
-                    c.setMensaje("Vacío");
+                    c.setMensaje(getString(R.string.vacio));
 
                     //System.out.println(c);
 
@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Mandamos el adaptador a la lista de contactos
         //  http://www.codigojavalibre.com/2015/10/crear-un-listview-con-imagenes-en-Android-Studio.html
+        mod.ordenarArrays();
         l = (ListView) findViewById(R.id.listaContactos);
         l.setAdapter(new CustomListAdapter(this, mod.getListaContactos()));
         //añadimos onitemclicklistener al listview
@@ -182,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         ContentResolver cr = getContentResolver();
         Cursor phones = cr.query(uriPhones, null, wherePhones, null, null);
 
-        String telefono = "vacío"; // variable temporal para el numero
+        String telefono = getString(R.string.vacio); // variable temporal para el numero
 
         while (phones.moveToNext()) {
             String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
@@ -194,19 +195,19 @@ public class MainActivity extends AppCompatActivity {
                      break;
 
                 case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
-                    if(telefono=="vacío"){
+                    if(telefono==getString(R.string.vacio)){
                         telefono=number;
                     }
 
                     //break;
 
                 case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
-                    if(telefono=="vacío"){
+                    if(telefono==getString(R.string.vacio)){
                         telefono=number;
                     }
                     //break;
                 case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER:
-                    if(telefono=="vacío"){
+                    if(telefono==getString(R.string.vacio)){
                         telefono=number;
                     }
                     break;
@@ -247,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
         //¿Cual es la columna de la fecha?
         int bDayColumn = birthCursor.getColumnIndex(ContactsContract.CommonDataKinds.Event.START_DATE);
 
-        String bDay = "vacío";
+        String bDay = getString(R.string.vacio);
         while (birthCursor.moveToNext()) {
             //conseguimos la fecha
             bDay = birthCursor.getString(bDayColumn);
