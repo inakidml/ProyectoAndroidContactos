@@ -19,27 +19,25 @@ import java.sql.SQLOutput;
 public class VerContactoActivity extends AppCompatActivity implements View.OnClickListener {
     private Contacto contactoOriginal;
     private Contacto c;
-    private CheckBox aviso;
-    private EditText mensaje;
-    private static final int CONTACT_REQUEST = 2;
+    private CheckBox aviso;//ref a aviso
+    private EditText mensaje;//ref a mensaje
+    private static final int CONTACT_REQUEST = 2; //id para intent a app de contactos
 
-    private Intent intentVuelta;
+    private Intent intentVuelta; //intent de vuelta a MainActivity
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //System.out.println("onCreate verDetalles");
         setContentView(R.layout.activity_ver_contacto);
+        //referencia a los botones de la vista y onClicklistener
         Button botonGuardar = (Button) findViewById(R.id.botonGuardar);
         botonGuardar.setOnClickListener(this);
         Button botonDetalles = (Button) findViewById(R.id.botonDetalles);
         botonDetalles.setOnClickListener(this);
-        //System.out.println(botonDetalles.getClass().getSimpleName());
-        //System.out.println(botonGuardar.getClass().getSimpleName());
-
+        //recuperamos el contacto que nosllega en el intent
         contactoOriginal = (Contacto) getIntent().getSerializableExtra("Contacto");
-        //Clonamos el contacto para devolver original y modificado para saber si ha habido cambios
+        //Clonamos el contacto para devolver original y modificado con el fin de saber si ha habido cambios
         c = new Contacto();
         c.setName(contactoOriginal.getName());
         c.setID(contactoOriginal.getID());
@@ -48,8 +46,9 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
         c.setMensaje(contactoOriginal.getMensaje());
         c.setTelefono(contactoOriginal.getTelefono());
         c.setTipoNotif(contactoOriginal.getTipoNotif());
-
+        //rellenamos la vista con los datos
         rellenarFicha();
+        //preparamos un intent de vuelta
         //si dan para atrás por lo menos sabemos los contactos
         intentVuelta = new Intent();
         intentVuelta.putExtra("Contacto Original", contactoOriginal);
@@ -59,12 +58,12 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(View view) {//botones
 
         switch (view.getId()) {
             case R.id.botonGuardar:
-                c.setMensaje(leerMensaje(mensaje));
-                c.setTipoNotifBoolean(aviso.isChecked());
+                c.setMensaje(leerMensaje(mensaje));//cogemos el mensaje
+                c.setTipoNotifBoolean(aviso.isChecked());//y el aviso
                 intentVuelta = new Intent();
                 intentVuelta.putExtra("Contacto Original", contactoOriginal);
                 intentVuelta.putExtra("Contacto Modificado", c);
@@ -85,17 +84,19 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
 
 
     private void rellenarFicha(){
+
+        //referencia a los elementos para rellenar de la vista
         ImageView photo = (ImageView) findViewById(R.id.photoVerContacto);
         TextView nombre = (TextView) findViewById(R.id.textoNombreVerContacto);
         TextView telefono = (TextView) findViewById(R.id.textoTelefonoVerContacto);
         aviso = (CheckBox) findViewById(R.id.checkBoxVerContacto);
         TextView fechaNacimiento = (TextView) findViewById(R.id.fechaNacimientoVerContacto);
         mensaje = (EditText) findViewById(R.id.mensajeVerContacto);
-
-        if(c.getPhotoURI()!=null){
+        //si la foto no esta vacía, la cargamos
+        if(!c.getPhotoURI().toString().equals(getString(R.string.vacio))){
             photo.setImageURI(Uri.parse(c.getPhotoURI()));
         }
-
+        //cargamos el resto de elementos
         nombre.setText(c.getName());
         telefono.setText(c.getTelefono());
         fechaNacimiento.setText(c.getFechaNacimiento());
@@ -104,18 +105,23 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
             aviso.setChecked(true);
         }
     }
-
+    //Función para leer el mensaje
     //si no hay texto escrito devuelve el hint (placeholder)
     private String leerMensaje(EditText mensaje) {
         return (mensaje.getText().toString().matches("") ? mensaje.getHint().toString() : mensaje.getText().toString());
 
     }
-
+    //resultado del intent a app contactos
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //https://developer.android.com/training/basics/intents/result.html
         // Check which request we're responding to
         if (requestCode == CONTACT_REQUEST) {
+            //siempre se vuelve dandole a la flecha hacia atrás, así que el result==CANCELED
+
+            //por si ha modificado el contacto, lo refrescamos
             actualizarContacto();
+
+            //preparamos un intent de vuelta por si vuelve con la flecha para atrás
             intentVuelta = new Intent();
             intentVuelta.putExtra("Contacto Original", contactoOriginal);
             intentVuelta.putExtra("Contacto Modificado", c);
@@ -133,7 +139,7 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
         }
 
     }
-
+    //actualizar info del contacto
     private void actualizarContacto() {
         //Conseguir nombre, ID y foto
         String proyeccion[] = {ContactsContract.Contacts._ID,
@@ -152,14 +158,13 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
                 String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 String imageURI = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
-                //System.out.println(id+name+imageURI);
+
                 //Conseguir cumple
                 String bDay = conseguirCumple(id);
                 //conseguir el número Movil
                 String telefono = conseguirMovil(id);
 
                 if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                    //System.out.println("Dentro del if");
                     c.setID(id);
                     c.setName(name);
                     c.setTelefono(telefono);

@@ -24,15 +24,15 @@ import java.util.List;
 
 public class Notificacion {
 
-    Context context;
+    private Context context;
 
+    //constructor
     public Notificacion(Context context, List<String> nombres) {
-        this.context = context;
+        this.context = context;//recibimos el contexto
         enviarNotificacion(nombres);
-
     }
 
-
+    //Función para enviar la notificación
     public void enviarNotificacion(List<String> nombres) {
 
         String mensaje = context.getString(R.string.saludoCumple);

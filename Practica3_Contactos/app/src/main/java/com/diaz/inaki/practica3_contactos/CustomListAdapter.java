@@ -31,7 +31,8 @@ public class CustomListAdapter extends ArrayAdapter<Contacto> {
         this.listaContactos = contactos;
 
     }
-//por cada elemento del arraylist llama a esta función
+
+    //por cada elemento del arraylist llama a esta función
     public View getView(int posicion, View view, ViewGroup parent) {
 
         LayoutInflater inflater = context.getLayoutInflater();
@@ -51,9 +52,10 @@ public class CustomListAdapter extends ArrayAdapter<Contacto> {
 
         textViewNumero.setText(listaContactos.get(posicion).getFechaNacimiento() + "  t: " + listaContactos.get(posicion).getTelefono());
         //foto
-        if (listaContactos.get(posicion).getPhotoURI() != context.getString(R.string.vacio)){
+        if (!listaContactos.get(posicion).getPhotoURI().toString().equals(context.getString(R.string.vacio))){
             imageViewPhoto.setImageURI(Uri.parse(listaContactos.get(posicion).getPhotoURI()));
         }
+
         //debug
         if(MainActivity.DEBUG) {
             System.out.println("Fila " + posicion + " de " + listaContactos.size());

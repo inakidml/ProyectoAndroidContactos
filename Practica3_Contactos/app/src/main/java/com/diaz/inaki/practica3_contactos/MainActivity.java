@@ -178,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("cursor cerrado");
         }
 
-
         if (MainActivity.DEBUG) {
             System.out.println("fin rellenar");
         }
@@ -189,13 +188,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == INTENTPARAVERCONTACTO) {
 
-            if (resultCode == RESULT_OK) {
+            if (resultCode == RESULT_OK) {//si se da al botón guardar el result es OK
                 Contacto contactoOriginal = (Contacto) data.getSerializableExtra("Contacto Original");
                 Contacto contactoModificado = (Contacto) data.getSerializableExtra("Contacto Modificado");
                 mod.modificarContactoDB(contactoModificado, contactoOriginal);
                 l.setAdapter(new CustomListAdapter(this, mod.getListaContactos()));
 
-            } else if (resultCode == RESULT_CANCELED) {
+            } else if (resultCode == RESULT_CANCELED) {//si le dan a flecha para atrás
                 Contacto contactoOriginal = (Contacto) data.getSerializableExtra("Contacto Original");
                 Contacto contactoModificado = (Contacto) data.getSerializableExtra("Contacto Modificado");
                 if (!contactoOriginal.equals(contactoModificado)) {
