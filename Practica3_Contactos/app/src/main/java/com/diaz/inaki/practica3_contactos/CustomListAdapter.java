@@ -23,6 +23,9 @@ public class CustomListAdapter extends ArrayAdapter<Contacto> {
     public CustomListAdapter(Activity context, List<Contacto> contactos) {
 
         super(context, R.layout.fila_lista, contactos);
+        if(MainActivity.DEBUG){
+            System.out.println("Constructor customlistadapter");
+        }
         this.context = context;
         this.listaContactos = contactos;
 
@@ -45,10 +48,13 @@ public class CustomListAdapter extends ArrayAdapter<Contacto> {
             textViewAviso.setText(R.string.not);
         }
         textViewNumero.setText(listaContactos.get(posicion).getFechaNacimiento() + "  t: " + listaContactos.get(posicion).getTelefono());
-        if (listaContactos.get(posicion).getPhotoURI()!=null){
+        if (listaContactos.get(posicion).getPhotoURI() != context.getString(R.string.vacio)){
             imageViewPhoto.setImageURI(Uri.parse(listaContactos.get(posicion).getPhotoURI()));
         }
-
+        if(MainActivity.DEBUG) {
+            System.out.println("Fila " + posicion + " de " + listaContactos.size());
+        }
         return rowView;
+
     }
 }

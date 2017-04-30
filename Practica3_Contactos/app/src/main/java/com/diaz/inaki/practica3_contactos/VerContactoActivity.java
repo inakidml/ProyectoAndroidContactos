@@ -21,7 +21,9 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
     private Contacto c;
     private CheckBox aviso;
     private EditText mensaje;
-    private static final int CONTACT_REQUEST = 2;  //
+    private static final int CONTACT_REQUEST = 2;
+
+    private Intent intentVuelta;
 
 
     @Override
@@ -48,6 +50,12 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
         c.setTipoNotif(contactoOriginal.getTipoNotif());
 
         rellenarFicha();
+        //si dan para atrás por lo menos sabemos los contactos
+        intentVuelta = new Intent();
+        intentVuelta.putExtra("Contacto Original", contactoOriginal);
+        intentVuelta.putExtra("Contacto Modificado", c);
+        setResult(RESULT_CANCELED, intentVuelta);
+
     }
 
     @Override
@@ -57,10 +65,10 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
             case R.id.botonGuardar:
                 c.setMensaje(leerMensaje(mensaje));
                 c.setTipoNotifBoolean(aviso.isChecked());
-                Intent i = new Intent();
-                i.putExtra("Contacto Original", contactoOriginal);
-                i.putExtra("Contacto Modificado", c);
-                setResult(RESULT_OK, i);
+                intentVuelta = new Intent();
+                intentVuelta.putExtra("Contacto Original", contactoOriginal);
+                intentVuelta.putExtra("Contacto Modificado", c);
+                setResult(RESULT_OK, intentVuelta);
                 finish();
                 break;
             case R.id.botonDetalles:
@@ -107,12 +115,11 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
         //https://developer.android.com/training/basics/intents/result.html
         // Check which request we're responding to
         if (requestCode == CONTACT_REQUEST) {
-            // no va
-            //Uri contactUri = (Uri) data.getData();
-
-
             actualizarContacto();
-
+            intentVuelta = new Intent();
+            intentVuelta.putExtra("Contacto Original", contactoOriginal);
+            intentVuelta.putExtra("Contacto Modificado", c);
+            setResult(RESULT_CANCELED, intentVuelta);
 
             // Make sure the request was successful
             /*Al volver dandole a la flecha para atrás, el resultado es RESULT_CANCELLED (0)
@@ -121,6 +128,7 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
                 // The user picked a contact.
                 // The Intent's data Uri identifies which contact was selected.
             }*/
+
 
         }
 
@@ -178,15 +186,28 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
             String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
             int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
             switch (type) {
-                case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
-                    //de momento no lo usamos
-                    break;
                 case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
                     telefono = number;
+                    //si no hay movil probamos con los demas
                     break;
+
+                case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+                    if (telefono == getString(R.string.vacio)) {
+                        telefono = number;
+                    }
+                    //break;
+
                 case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
-                    //de momento no lo usamos
+                    if (telefono == getString(R.string.vacio)) {
+                        telefono = number;
+                    }
+                    //break;
+                case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER:
+                    if (telefono == getString(R.string.vacio)) {
+                        telefono = number;
+                    }
                     break;
+
             }
         }
         phones.close();

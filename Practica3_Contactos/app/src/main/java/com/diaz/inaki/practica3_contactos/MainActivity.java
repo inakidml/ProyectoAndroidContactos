@@ -29,23 +29,26 @@ public class MainActivity extends AppCompatActivity {
     private Menu refMenu; //referencia para poder cambiar el icono del menú
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent; //para el broadcast de la alarma
-    private int horaAlarma = 20;
+    private int horaAlarma = 12; // hora por defecto para la alarma
     private int minutoAlarma = 00;
+
+    public static Boolean DEBUG = false; // constante para hacer debug
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Context context = this;
-        mod = new Modelo(this);
-        //mod.OJOborrarDB();
-        Alarma.mod = mod;
-        setAlarma(horaAlarma, minutoAlarma);
-        rellenarListaContactosDesdeTel();
+        mod = new Modelo(this); //Instanciamos un modelo para poder guardar
+        //en el constructor carga la BD en array
+        Alarma.mod = mod; //pasamos la referencia del modelo (statica) a la clase alarma, ya que puede ser llamada por un broadcast
+        setAlarma(horaAlarma, minutoAlarma); //activamos la alarma con la hora por defecto
+        rellenarListaContactosDesdeTel(); //lee los contactos del movil y rellena la BD y arrays
+        cargarListView();//rellena el listview
 
     }
 
+    //inflamos el menú
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflar Menú
@@ -56,9 +59,10 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    //opciones del menú
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+        switch (item.getItemId()) {//por si metemos mas opciones
             case R.id.MnuOpc1://Seleccionar hora
 
                 Calendar mcurrentTime = Calendar.getInstance();
@@ -70,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         horaAlarma = selectedHour;
                         minutoAlarma = selectedMinute;
-                        setAlarma(horaAlarma, minutoAlarma);
+                        setAlarma(horaAlarma, minutoAlarma);//cambiamos la hora de la alarma
 
                     }
                 }, hour, minute, true);
@@ -82,9 +86,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    //rellena la base de datos con los contactos del teléfono
     public void rellenarListaContactosDesdeTel() {
-        //Conseguir nombre, ID y foto
+        //debug
+        if (MainActivity.DEBUG) {
+            System.out.println("MainActivuty rellenar contactos desde tel ");
+        }
+
+        //Conseguir nombre, ID y foto desde el teléfono
         String proyeccion[] = {ContactsContract.Contacts._ID,
                 ContactsContract.Contacts.DISPLAY_NAME,
                 ContactsContract.Contacts.HAS_PHONE_NUMBER,
@@ -93,11 +102,16 @@ public class MainActivity extends AppCompatActivity {
         String filtro = ContactsContract.Contacts.DISPLAY_NAME + " like ?";//las interrogaciones se sustituyen por los args_filtro
         String args_filtro[] = {"%" + "" + "%"};
 
-        ContentResolver cr = getContentResolver();
-        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, proyeccion, filtro, args_filtro, null);
+        ContentResolver cr = getContentResolver();//content resolver
+        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, proyeccion, filtro, args_filtro, null); //cursor de la query
 
-        if (cur.getCount() > 0) {
+        if (cur.getCount() > 0) {//si el cursor tiene datos
             while (cur.moveToNext()) {
+                //debug
+                if (DEBUG) {
+                    System.out.println("siguiente del cursor");
+                }
+                //vamos sacando la información
                 String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 String imageURI = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
@@ -106,54 +120,68 @@ public class MainActivity extends AppCompatActivity {
                 String bDay = conseguirCumple(id);
                 //conseguir el número Movil
                 String telefono = conseguirMovil(id);
-                //System.out.println("id= " + id + " name= " + name + " column ndex has phone number =" +cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
-                //if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                    Contacto c = new Contacto();
-                    c.setID(id);
-                    c.setName(name);
-                    c.setTipoNotifBoolean(false);
-                    c.setTelefono(telefono);
-                    c.setPhotoURI(imageURI);
-                    c.setFechaNacimiento(bDay);
-                    c.setMensaje(getString(R.string.vacio));
 
-                    //System.out.println(c);
+                //Contacto temporal
+                Contacto c = new Contacto();
+                c.setID(id);
+                c.setName(name);
+                c.setTipoNotifBoolean(false);
+                c.setTelefono(telefono);
+                //si no tiene imagen, ponemos vacío, si no, al hacer equals de null , falla
+                if (imageURI == null) {
+                    imageURI = getString(R.string.vacio);
+                }
+                c.setPhotoURI(imageURI);
+                c.setFechaNacimiento(bDay);
+                c.setMensaje(getString(R.string.vacio));
+                //lo añadimos a una lista para saber que contactos siguen en el teléfono para luego poder limpiar
+                mod.getListaIdsPhone().put(id, c);
 
-                    if (mod.getListaIdsBd().containsKey(c.getID())) {
-                        Contacto cGuardado = mod.getListaContactos().get(mod.getListaIdsBd().get(c.getID()));
-                        if (!cGuardado.equals(c)) {
-                            //Si el contacto se ha modificado, lo cambiamos
-                            //mantenemos el mensaje y el tipo de notificación
-                            String mensaje = cGuardado.getMensaje();
-                            char aviso = cGuardado.getTipoNotif();
-                            c.setMensaje(mensaje);
-                            c.setTipoNotif(aviso);
-                            mod.modificarContactoDB(c, cGuardado);
-                        }
-                    } else {
-                        mod.aniadirContactoDB(c);
+                //si este id existe ya, lo vamos a comparar, para saber si se ha modificado, else lo añadimos directamente
+                if (mod.getListaIdsBd().containsKey(c.getID())) {
+
+                    //debug
+                    if (DEBUG) {
+                        System.out.println("contiene la clave");
                     }
-                    //TODO comprobar que no se ha borrado algun contacto del teléfono, si es que sí, borrarlo
-                //}
+                    //conseguimos el contacto con el mismo id
+                    Contacto cGuardado = mod.getListaContactos().get(mod.getListaIdsBd().get(c.getID()));
+
+                    if (!cGuardado.equals(c)) {//si no es igual lo modificamos
+                        //debug
+                        if (DEBUG) {
+                            System.out.println("Contacto difiere");
+                            System.out.println(cGuardado);
+                            System.out.println(c);
+                        }
+                        //Si el contacto se ha modificado, lo cambiamos
+                        //mantenemos el mensaje y el tipo de notificación
+                        String mensaje = cGuardado.getMensaje();
+                        char aviso = cGuardado.getTipoNotif();
+                        c.setMensaje(mensaje);
+                        c.setTipoNotif(aviso);
+                        //cambiamos el contacto a traves del modelo
+                        mod.modificarContactoDB(c, cGuardado);
+                    }//si es igual, no hacemos nada
+                }//si no existe el id lo añadimos directamente
+                else {
+                    mod.aniadirContactoDB(c);
+                }
             }
         }
         cur.close();//Cerramos el cursor
 
-        //Mandamos el adaptador a la lista de contactos
-        //  http://www.codigojavalibre.com/2015/10/crear-un-listview-con-imagenes-en-Android-Studio.html
-        mod.ordenarArrays();
-        l = (ListView) findViewById(R.id.listaContactos);
-        l.setAdapter(new CustomListAdapter(this, mod.getListaContactos()));
-        //añadimos onitemclicklistener al listview
-        l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(MainActivity.this, VerContactoActivity.class);
-                Contacto c = mod.getListaContactos().get(i);
-                intent.putExtra("Contacto", c);
-                startActivityForResult(intent, INTENTPARAVERCONTACTO);
-            }
-        });
+        //debug
+        if (MainActivity.DEBUG) {
+            System.out.println("cursor cerrado");
+        }
+
+        //borramos los contactos que ya no estan en el teléfono
+        mod.limpiarDB();
+
+        if (MainActivity.DEBUG) {
+            System.out.println("fin rellenar");
+        }
     }
 
     //recibe los resultados de la actividad ver detalle
@@ -161,20 +189,26 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == INTENTPARAVERCONTACTO) {
 
-
             if (resultCode == RESULT_OK) {
                 Contacto contactoOriginal = (Contacto) data.getSerializableExtra("Contacto Original");
                 Contacto contactoModificado = (Contacto) data.getSerializableExtra("Contacto Modificado");
                 mod.modificarContactoDB(contactoModificado, contactoOriginal);
                 l.setAdapter(new CustomListAdapter(this, mod.getListaContactos()));
 
-                // System.out.println("intent de vuelta OK");
-            } else {
-                //TODO si se da a la flecha para atrás, comprobar que no se ha modificado en el teléfono
+            } else if (resultCode == RESULT_CANCELED) {
+                Contacto contactoOriginal = (Contacto) data.getSerializableExtra("Contacto Original");
+                Contacto contactoModificado = (Contacto) data.getSerializableExtra("Contacto Modificado");
+                if (!contactoOriginal.equals(contactoModificado)) {
+                    String mensaje = contactoOriginal.getMensaje();
+                    char aviso = contactoOriginal.getTipoNotif();
+                    contactoModificado.setMensaje(mensaje);
+                    contactoModificado.setTipoNotif(aviso);
+                    mod.modificarContactoDB(contactoModificado, contactoOriginal);
+                }
             }
         }
     }
-
+    //función para conseguir el número de un contacto, pasandole el id
     private String conseguirMovil(String id) {
 
         //Cursor para conseguir solo el número de movil
@@ -192,23 +226,22 @@ public class MainActivity extends AppCompatActivity {
                 case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
                     telefono = number;
                     //si no hay movil probamos con los demas
-                     break;
+                    break;
 
                 case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
-                    if(telefono==getString(R.string.vacio)){
-                        telefono=number;
+                    if (telefono == getString(R.string.vacio)) {
+                        telefono = number;
                     }
-
                     //break;
 
                 case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
-                    if(telefono==getString(R.string.vacio)){
-                        telefono=number;
+                    if (telefono == getString(R.string.vacio)) {
+                        telefono = number;
                     }
                     //break;
                 case ContactsContract.CommonDataKinds.Phone.TYPE_OTHER:
-                    if(telefono==getString(R.string.vacio)){
-                        telefono=number;
+                    if (telefono == getString(R.string.vacio)) {
+                        telefono = number;
                     }
                     break;
 
@@ -217,10 +250,9 @@ public class MainActivity extends AppCompatActivity {
         phones.close();
         return telefono;
     }
-
+    //función para conseguir fecha de cumpleaños de un contacto, pasandole el id
     private String conseguirCumple(String id) {
         //Conseguir Fecha nacimiento
-
         //http://stackoverflow.com/questions/8579883/get-birthday-for-each-contact-in-android-application/8638744
 
         //preparamos cursor filtrando con el ID del contacto
@@ -259,11 +291,13 @@ public class MainActivity extends AppCompatActivity {
         return bDay;
     }
 
+    //Alarma para las notificaciones y sms
     public void setAlarma(int hora, int minutos) {
-        //System.out.println("Activar alarma a las : " +  hora + minutos);
-        //System.out.println(alarmMgr);
+        if (DEBUG) {
+            System.out.println("Activar alarma a las : " + hora + minutos);
+        }
 
-        if (alarmMgr == null) {
+        if (alarmMgr == null) {//si no se ha instanciado ya
 
        /*configurar calendario*/
             Calendar calendar = Calendar.getInstance();
@@ -272,20 +306,44 @@ public class MainActivity extends AppCompatActivity {
             calendar.set(Calendar.MINUTE, minutos);
        /*crear la alarma*/
             Intent intent = new Intent(this, Alarma.class);
-            alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+            alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0); //pending intent, no va a ser ahora
             alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
-            //System.out.println("Alarma configurada a las " + hora + ":" + minutos);
-        } else {
+            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);//repetición todos los días
+            if (DEBUG) {
+                System.out.println("Alarma configurada a las " + hora + ":" + minutos);
+            }
+        } else { //si ya estaba activada, cambiamos la hora
             /*configurar calendario*/
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
             calendar.set(Calendar.HOUR_OF_DAY, hora);
             calendar.set(Calendar.MINUTE, minutos);
             alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
-            //System.out.println("Alarma cambiada" + hora + minutos);
-
+            if (DEBUG) {
+                System.out.println("Alarma cambiada" + hora + minutos);
+            }
         }
+    }
+    //cargar el listview
+    private void cargarListView() {
+
+        //Mandamos el adaptador a la lista de contactos
+        //  http://www.codigojavalibre.com/2015/10/crear-un-listview-con-imagenes-en-Android-Studio.html
+
+        mod.ordenarArrays();//primero ordenamos los arrays para que aparezcan en orden alfabético
+        l = (ListView) findViewById(R.id.listViewContactos);//referencia al listview
+        l.setAdapter(new CustomListAdapter(this, mod.getListaContactos()));//le pasamos el adaptador con el array de contactos
+
+        //añadimos onitemclicklistener al listview con un intent a la actividad vercontacto
+        l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(MainActivity.this, VerContactoActivity.class);
+                Contacto c = mod.getListaContactos().get(i);
+                intent.putExtra("Contacto", c);
+                startActivityForResult(intent, INTENTPARAVERCONTACTO);
+            }
+        });
     }
 }
 

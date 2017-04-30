@@ -24,6 +24,7 @@ public class Contacto implements Serializable{
 
     //equals y HashCode
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -50,6 +51,8 @@ public class Contacto implements Serializable{
         result = 31 * result + (photoURI != null ? photoURI.hashCode() : 0);
         return result;
     }
+
+    //toString
 
     @Override
     public String toString() {
@@ -121,7 +124,7 @@ public class Contacto implements Serializable{
     public void setTipoNotif(char tipoNotif) {
         this.tipoNotif = tipoNotif;
     }
-
+    //mas cómodo que ccon char
     public void setTipoNotifBoolean(Boolean checked) {
         if(checked){
             this.tipoNotif = 'y';
