@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         Alarma.mod = mod; //pasamos la referencia del modelo (statica) a la clase alarma, ya que puede ser llamada por un broadcast
         setAlarma(horaAlarma, minutoAlarma); //activamos la alarma con la hora por defecto
         rellenarListaContactosDesdeTel(); //lee los contactos del movil y rellena la BD y arrays
+        mod.limpiarDB();//borramos los contactos que ya no estan en el teléfono
+        mod.ordenarArrays();//ordenamos los arrays para que aparezcan en orden alfabético
         cargarListView();//rellena el listview
 
     }
@@ -176,8 +178,6 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("cursor cerrado");
         }
 
-        //borramos los contactos que ya no estan en el teléfono
-        mod.limpiarDB();
 
         if (MainActivity.DEBUG) {
             System.out.println("fin rellenar");
@@ -330,7 +330,6 @@ public class MainActivity extends AppCompatActivity {
         //Mandamos el adaptador a la lista de contactos
         //  http://www.codigojavalibre.com/2015/10/crear-un-listview-con-imagenes-en-Android-Studio.html
 
-        mod.ordenarArrays();//primero ordenamos los arrays para que aparezcan en orden alfabético
         l = (ListView) findViewById(R.id.listViewContactos);//referencia al listview
         l.setAdapter(new CustomListAdapter(this, mod.getListaContactos()));//le pasamos el adaptador con el array de contactos
 
