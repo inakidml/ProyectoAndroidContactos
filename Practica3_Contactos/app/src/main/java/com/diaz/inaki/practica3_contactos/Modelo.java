@@ -89,9 +89,8 @@ public class Modelo {
         if (c.getCount() == 0)
             System.out.println(R.string.noRegistros);
         else {
-            listaIdsBd.clear(); //borramos
-            while (c.moveToNext()) {
 
+            while (c.moveToNext()) {
                 Contacto contactoTemp = new Contacto(); // contacto temporal
 
                 contactoTemp.setID(c.getString(0));
@@ -103,10 +102,12 @@ public class Modelo {
                 contactoTemp.setPhotoURI(c.getString(6));
 
                 listaContactos.add(contactoTemp); // arraylist de contactos
-                getListaIdsBd().put(c.getString(0), listaContactos.indexOf(contactoTemp));//lo añadimos al map para saber si esta
             }
         }
         cerrarDB();
+
+        //despues de cambiar el orden sincronizamos arrays
+        syncArrays();
 
         //debug
         if (MainActivity.DEBUG) {
@@ -129,18 +130,25 @@ public class Modelo {
                     }
                 }
         );
-
-        listaIdsBd.clear(); //borramos map para reordenar
-        for (int i = 0; i < listaContactos.size(); i++) {
-            Contacto c = listaContactos.get(i);
-            getListaIdsBd().put(c.getID(), i);//lo añadimos al map para saber si esta
-        }
+        //despues de cambiar el orden sincronizamos arrays
+        syncArrays();
 
         //debug
         if (MainActivity.DEBUG) {
             System.out.println("Arrays ordenados");
         }
 
+    }
+
+    //sincronizamos los arrays de contactos y map de posiciones
+    private void syncArrays(){
+
+        //reodenamos el Map para saber posiciones
+        listaIdsBd.clear(); //borramos map para reordenar
+        for (int i = 0; i < listaContactos.size(); i++) {
+            Contacto cOrdenar = listaContactos.get(i);
+            getListaIdsBd().put(cOrdenar.getID(), i);//lo añadimos al map para saber si esta
+        }
     }
 
     //lista los contactos de la BD
@@ -170,11 +178,13 @@ public class Modelo {
         int posicion = listaIdsBd.get(c.getID());
         listaIdsBd.remove(c.getID());
         listaContactos.remove(posicion);
+
         cerrarDB();
+        syncArrays();
 
         //debug
         if (MainActivity.DEBUG) {
-            System.out.println("Contacto borrado");
+            System.out.println("Contacto borrado" + c);
         }
     }
 
@@ -209,30 +219,33 @@ public class Modelo {
         }
     }
 
-    public void limpiarDB(){
+    public void limpiarDB() {
+
+        //debug
+        if (MainActivity.DEBUG) {
+            System.out.println("limpiando BD");
+        }
+
         //comprobación de contactos no existentes
 
         //Borramos los contactos que se han borrado del teléfono
-        Collection<Integer> listaIds = new ArrayList<>();
-        listaIds = getListaIdsBd().values(); //volcamos las claves a una colleccíon-posiciones en el arraylist
-        List<Integer> listaParaBorrar = new ArrayList<>(); //lista provisional por problemas inmutabilidad de la colección, no puedo borrar dentro del foreach
+
+        List<Contacto> listaParaBorrar = new ArrayList<>(); //lista provisional por problemas inmutabilidad de la colección, no puedo borrar dentro del foreach
+
         //bucle para saber si los ids de la bd estan en la lista de las del teléfono
-        for (Integer i : listaIds
-                ) {
+        for (int i = 0; i < listaContactos.size(); i++) {
             if (!getListaIdsPhone().containsKey(getListaContactos().get(i).getID())) {
-                listaParaBorrar.add(i);//si no esta lo añadimos para borrar mas tarde
+                listaParaBorrar.add(getListaContactos().get(i));//si no esta lo añadimos para borrar mas tarde
             }
         }
         //recorremos la lista para borrar
-        for (Integer i : listaParaBorrar
-                ) {
+        for (Contacto c : listaParaBorrar) {
             //y borramos
-            borrarContactoDB(getListaContactos().get(i));
-
-            //debug
-            if (MainActivity.DEBUG) {
-                System.out.println("No tiene la id, procedemos a borrar contacto");
-            }
+            borrarContactoDB(c);
+        }
+        //debug
+        if (MainActivity.DEBUG) {
+            System.out.println("Fin limpiar BD");
         }
 
     }

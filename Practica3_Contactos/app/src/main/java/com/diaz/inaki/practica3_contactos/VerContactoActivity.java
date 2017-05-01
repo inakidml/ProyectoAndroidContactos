@@ -83,7 +83,7 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-    private void rellenarFicha(){
+    private void rellenarFicha() {
 
         //referencia a los elementos para rellenar de la vista
         ImageView photo = (ImageView) findViewById(R.id.photoVerContacto);
@@ -93,9 +93,9 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
         TextView fechaNacimiento = (TextView) findViewById(R.id.fechaNacimientoVerContacto);
         mensaje = (EditText) findViewById(R.id.mensajeVerContacto);
         //si la foto no esta vacía, la cargamos
-        if(!c.getPhotoURI().toString().equals(getString(R.string.vacio))){
+        if (!c.getPhotoURI().toString().equals(getString(R.string.vacio))) {
             photo.setImageURI(Uri.parse(c.getPhotoURI()));
-        }
+        }else{photo.setImageResource(R.drawable.ic_stat_name);}
         //cargamos el resto de elementos
         nombre.setText(c.getName());
         telefono.setText(c.getTelefono());
@@ -105,12 +105,14 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
             aviso.setChecked(true);
         }
     }
+
     //Función para leer el mensaje
     //si no hay texto escrito devuelve el hint (placeholder)
     private String leerMensaje(EditText mensaje) {
         return (mensaje.getText().toString().matches("") ? mensaje.getHint().toString() : mensaje.getText().toString());
 
     }
+
     //resultado del intent a app contactos
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //https://developer.android.com/training/basics/intents/result.html
@@ -139,6 +141,7 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
         }
 
     }
+
     //actualizar info del contacto
     private void actualizarContacto() {
         //Conseguir nombre, ID y foto
@@ -157,6 +160,7 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
             while (cur.moveToNext()) {
                 String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+
                 String imageURI = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.PHOTO_URI));
 
                 //Conseguir cumple
@@ -164,13 +168,17 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
                 //conseguir el número Movil
                 String telefono = conseguirMovil(id);
 
-                if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                    c.setID(id);
-                    c.setName(name);
-                    c.setTelefono(telefono);
-                    c.setPhotoURI(imageURI);
-                    c.setFechaNacimiento(bDay);
+
+                c.setID(id);
+                c.setName(name);
+                c.setTelefono(telefono);
+                //si no tiene imagen, ponemos vacío, si no, al hacer equals de null , falla
+                if (imageURI == null) {
+                    imageURI = getString(R.string.vacio);
                 }
+                c.setPhotoURI(imageURI);
+                c.setFechaNacimiento(bDay);
+
             }
         }
 

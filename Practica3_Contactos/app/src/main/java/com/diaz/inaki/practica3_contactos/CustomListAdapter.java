@@ -32,7 +32,7 @@ public class CustomListAdapter extends ArrayAdapter<Contacto> {
 
     }
 
-    //por cada elemento del arraylist llama a esta función
+    //por cada elemento del arraylist llama a esta función (solo los que haya visibles en pantalla)
     public View getView(int posicion, View view, ViewGroup parent) {
 
         LayoutInflater inflater = context.getLayoutInflater();

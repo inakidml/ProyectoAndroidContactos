@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private int curSize = 100;
     private int curPos = 0;
 
-    public static Boolean DEBUG = false; // constante para hacer debug
+    public static Boolean DEBUG = true; // constante para hacer debug
 
 
     @Override
@@ -139,9 +139,9 @@ public class MainActivity extends AppCompatActivity {
                 curPos = cur.getPosition();
 
                 //debug
-                if (DEBUG) {
+                /*if (DEBUG) {
                     System.out.println("siguiente del cursor");
-                }
+                }*/
                 //vamos sacando la información
                 String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
@@ -172,9 +172,9 @@ public class MainActivity extends AppCompatActivity {
                 if (mod.getListaIdsBd().containsKey(c.getID())) {
 
                     //debug
-                    if (DEBUG) {
+                    /*if (DEBUG) {
                         System.out.println("contiene la clave");
-                    }
+                    }*/
                     //conseguimos el contacto con el mismo id
                     Contacto cGuardado = mod.getListaContactos().get(mod.getListaIdsBd().get(c.getID()));
 
@@ -254,6 +254,7 @@ public class MainActivity extends AppCompatActivity {
                     contactoModificado.setMensaje(mensaje);
                     contactoModificado.setTipoNotif(aviso);
                     mod.modificarContactoDB(contactoModificado, contactoOriginal);
+                    l.setAdapter(new CustomListAdapter(this, mod.getListaContactos()));
                 }
             }
         }
