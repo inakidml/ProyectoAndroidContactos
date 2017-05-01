@@ -2,6 +2,7 @@ package com.diaz.inaki.practica3_contactos;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -32,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     private int horaAlarma = 12; // hora por defecto para la alarma
     private int minutoAlarma = 00;
 
+    private int curSize = 100;
+    private int curPos = 0;
+
     public static Boolean DEBUG = false; // constante para hacer debug
 
 
@@ -43,11 +47,24 @@ public class MainActivity extends AppCompatActivity {
         //en el constructor carga la BD en array
         Alarma.mod = mod; //pasamos la referencia del modelo (statica) a la clase alarma, ya que puede ser llamada por un broadcast
         setAlarma(horaAlarma, minutoAlarma); //activamos la alarma con la hora por defecto
-        rellenarListaContactosDesdeTel(); //lee los contactos del movil y rellena la BD y arrays
-        mod.limpiarDB();//borramos los contactos que ya no estan en el teléfono
-        mod.ordenarArrays();//ordenamos los arrays para que aparezcan en orden alfabético
-        cargarListView();//rellena el listview
+        mod.ordenarArrays();
+        cargarListView();//Vista previa de contactos
+        final Thread t = new Thread() {//lo mandamos a un hilo para poder hacer progressBar
+            @Override
+            public void run() {
+                rellenarListaContactosDesdeTel(); //lee los contactos del movil y rellena la BD y arrays
 
+                runOnUiThread(new Runnable() {//para poder ejecuarlo en el hilo principal
+                    @Override
+                    public void run() {
+                        mod.limpiarDB();//borramos los contactos que ya no estan en el teléfono
+                        mod.ordenarArrays();//ordenamos los arrays para que aparezcan en orden alfabético
+                        cargarListView();//rellena el listview
+                    }
+                });
+            }
+        };
+        t.start();
     }
 
     //inflamos el menú
@@ -107,8 +124,20 @@ public class MainActivity extends AppCompatActivity {
         ContentResolver cr = getContentResolver();//content resolver
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, proyeccion, filtro, args_filtro, null); //cursor de la query
 
+        curSize = cur.getCount();//para la progress bar
+
+        runOnUiThread(new Runnable() {//mandamos el progressBar al hilo principal
+            @Override
+            public void run() {
+                progresoRellenar();
+            }
+        });
+
         if (cur.getCount() > 0) {//si el cursor tiene datos
             while (cur.moveToNext()) {
+
+                curPos = cur.getPosition();
+
                 //debug
                 if (DEBUG) {
                     System.out.println("siguiente del cursor");
@@ -183,6 +212,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //barra de preogreso para rellenarcontactosdesdetel
+    private void progresoRellenar(){
+
+        final ProgressDialog progress = new ProgressDialog(this);;
+        progress.setMessage("Buscando cambios en contactos");
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progress.setMax(curSize);
+        progress.setProgress(0);
+        progress.show();
+
+        final Thread t = new Thread() {
+            @Override
+            public void run() {
+                while (curPos<curSize-1){
+                    progress.setProgress(curPos+1);
+                }
+                progress.dismiss();
+            }
+        };
+        t.start();
+
+    }
     //recibe los resultados de la actividad ver detalle
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -289,7 +340,6 @@ public class MainActivity extends AppCompatActivity {
 
         return bDay;
     }
-
     //Alarma para las notificaciones y sms
     public void setAlarma(int hora, int minutos) {
         if (DEBUG) {
