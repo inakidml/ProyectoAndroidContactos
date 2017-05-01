@@ -214,8 +214,8 @@ public class Modelo {
 
         //Borramos los contactos que se han borrado del teléfono
         Collection<Integer> listaIds = new ArrayList<>();
-        listaIds = getListaIdsBd().values(); //volcamos las claves a una colleccíon
-        List<Integer> listaParaBorrar = new ArrayList<>(); //lista provisional por problemas de concurrecia e inmutabilidad de la colección, no puedo borrar dentro del foreach
+        listaIds = getListaIdsBd().values(); //volcamos las claves a una colleccíon-posiciones en el arraylist
+        List<Integer> listaParaBorrar = new ArrayList<>(); //lista provisional por problemas inmutabilidad de la colección, no puedo borrar dentro del foreach
         //bucle para saber si los ids de la bd estan en la lista de las del teléfono
         for (Integer i : listaIds
                 ) {
