@@ -54,7 +54,7 @@ public class CustomListAdapter extends ArrayAdapter<Contacto> {
         //foto
         if (!listaContactos.get(posicion).getPhotoURI().toString().equals(context.getString(R.string.vacio))){
             imageViewPhoto.setImageURI(Uri.parse(listaContactos.get(posicion).getPhotoURI()));
-        }
+        }else{imageViewPhoto.setImageResource(R.drawable.ic_action_name);}
 
         //debug
         if(MainActivity.DEBUG) {

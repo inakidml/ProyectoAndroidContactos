@@ -95,7 +95,7 @@ public class VerContactoActivity extends AppCompatActivity implements View.OnCli
         //si la foto no esta vacía, la cargamos
         if (!c.getPhotoURI().toString().equals(getString(R.string.vacio))) {
             photo.setImageURI(Uri.parse(c.getPhotoURI()));
-        }else{photo.setImageResource(R.drawable.ic_stat_name);}
+        }else{photo.setImageResource(R.drawable.ic_action_name);}
         //cargamos el resto de elementos
         nombre.setText(c.getName());
         telefono.setText(c.getTelefono());
